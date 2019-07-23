@@ -16,8 +16,6 @@ app.factory('library', function() {
 			dataconfig=configdata;
 			canvasid=canvas_id;
 			for (var k=0;k<datainput.length;k++) {
-				//sorted_data[k].status = inputdata.slice(k).status;
-				//sorted_data[k].value = inputdata.slice(k).value;
 				sorted_data[k] = inputdata[k];
 			}
 			if(dataconfig[10].value=="funnel")
@@ -32,18 +30,29 @@ app.factory('library', function() {
 });
 
 
+
 			
 				
 
 var _$funnelchart=function(){
+
+	
     var temp_canvas = document.getElementById(this.canvasid);
     var context = temp_canvas.getContext('2d');
+
+
+
+
+
+
 
     var wid = dataconfig[3].value;
     var hgt = dataconfig[4].value;
 
     temp_canvas.width = wid;
     temp_canvas.height = hgt;
+
+    var tot_val = 0;
 
     var n_hgt = Number(hgt);
     var n_wid = Number(wid);
@@ -68,12 +77,17 @@ var _$funnelchart=function(){
     });    
 
 
+    for(var p=0;p<datainput.length;p++){
+    	tot_val = tot_val + datainput[p].value;
+    }
+
     var line_x_s = first_x;
     var line_x_e = third_x;
     var line_y = first_y;
     //set_font
     var font_sz =  dataconfig[2].value+" "+dataconfig[1].value+" "+dataconfig[0].value;
     context.font = font_sz;
+
 
     //size configuration
     var flg = 0;
@@ -109,111 +123,94 @@ var _$funnelchart=function(){
         
     }while(flg!=0);
 
-    var line_x_s_ = line_x_s;
-    var line_x_e_ = line_x_e;
-    var line_y_ = line_y;
 
 
-    
+
+
+      
     //draw funnelChart
     for(var i=0;i<sorted_data.length;i++)
     {
-        if(i==(sorted_data.length-1))
-        {
-        	//draw line
-            context.beginPath();
-            context.moveTo(line_x_s, line_y+10);
-            context.lineTo(line_x_e, line_y+10);
-            context.lineTo(line_x_e - x_diff + 10  , line_y + y_diff - 10);
-            context.lineTo(line_x_s + x_diff - 10, line_y + y_diff - 10);
-            context.lineTo(line_x_s, line_y+10);
-            context.fillStyle = '#'+ Math.random().toString().slice(3,6);
-            context.fill();
-            context.stroke();
-            context.closePath();
 
-            //write text
+
+    	let idx=0;
+    	for(var l=0;l<datainput.length;l++){
+    		if((sorted_data[i].status == datainput[l].status) && (sorted_data[i].value == datainput[l].value))
+    		{
+    			idx = l;
+    			
+    			break;
+    		}
+    	}
+
+
+    	var color = ['red', 'blue', 'yellow', 'grey', 'green', 'orange','lightsalmon',"indianred","darkorange",
+    	"darkkhaki","khaki","lawngreen","chartreuse","limegreen","greenyellow","springgreen","mediumspringgreen",
+    	"lightgreen","palegreen","mediumseagreen","olivedrab","aqua","darkcyan","turquoise","cornflowerblue",
+    	"fuchsia","violet","silver","mistyrose"];
+		var strokeStyle = color[Math.floor(Math.random() * color.length)];
+    	
+
+
+    	context.beginPath();
+        context.moveTo(line_x_s+(i*x_diff), line_y+(idx*y_diff)+10);
+        context.lineTo(line_x_e-(i*x_diff), line_y+(idx*y_diff)+10);
+        context.lineTo(line_x_e-(i*x_diff) - x_diff, line_y+(idx*y_diff) + y_diff);
+        context.lineTo(line_x_s+(i*x_diff) + x_diff, line_y+(idx*y_diff) + y_diff);
+        context.lineTo(line_x_s+(i*x_diff), line_y+(idx*y_diff)+10);
+
+        //context.fillStyle = '#'+ Math.random().toString().slice(3,6);
+        context.fillStyle = strokeStyle;
+        context.fill();
+        context.stroke();
+        context.closePath();
+
+
         
-            context.fillStyle = dataconfig[11].value;
+    	//write text 
+	    context.fillStyle = dataconfig[11].value;
+	    //context.font = "15px Arial";
+	    var status_len =  context.measureText(datainput[idx].status).width;
+	    var value_len =  context.measureText(datainput[idx].value).width;
+	    var total_len = status_len+value_len;
 
-            var status_len =  context.measureText(datainput[i].status).width;
-            var value_len =  context.measureText(datainput[i].value).width;
-            var total_len = status_len+value_len;
 
-            if(dataconfig[6].value == "left")
-            {
-                var text_x = (line_x_s + x_diff);
-                var text_y = (line_y+line_y+y_diff)/2+5;
-                context.fillText(datainput[i].status+": "+datainput[i].value,text_x, text_y + (y_diff*.1));
-            }
-            else if(dataconfig[6].value == "right"){
-            	var temp_rx = line_x_e - x_diff; 
-            	var text_x = temp_rx - total_len;
+      let tempImage = new Image();
+	  tempImage.src = datainput[idx].image;
+	  
 
-            	var text_y = (line_y+line_y+y_diff)/2;
-            	//console.log(line_x_e+" "+x_diff+" "+temp_rx+" "+text_x);
-            	context.fillText(datainput[i].status+": "+datainput[i].value,text_x, text_y+(y_diff*.1));
-            }
-            else{
-                var text_x =line_x_s + (line_x_e-line_x_s)/2;
-                var text_y = (line_y+line_y+y_diff)/2;
-                var align = context.measureText(datainput[i].status+""+datainput[i].value).width/2;
-                context.fillText(datainput[i].status+": "+datainput[i].value,text_x-align, text_y);
-            }
+       if(dataconfig[6].value == "left")
+        {
+            let text_x = (line_x_s+(i*x_diff) + (x_diff/2));
+            //var text_y = (line_y+line_y+y_diff)/2;
+            let text_y = (line_y+(idx*y_diff)+(y_diff/2));
+            context.fillText(datainput[idx].status+": "+datainput[idx].value,text_x+(x_diff*.8), text_y+(y_diff*.1));
+            tempImage.onload = function() {
+				context.drawImage(tempImage, text_x+(.2*x_diff), text_y - (y_diff*.1), x_diff*.5, y_diff*.25);
+			}
+        }
+        else if(dataconfig[6].value == "right"){
+        	let temp_rx = line_x_e - (i*x_diff)- x_diff; 
+        	let text_x = temp_rx - total_len;
+        	//var text_y = (line_y+line_y+y_diff)/2;
+        	let text_y = (line_y+(idx*y_diff)+(y_diff/2));
+        	context.fillText(datainput[idx].status+": "+datainput[idx].value,text_x, text_y+(y_diff*.1));
+		    tempImage.onload = function() {
+			    context.drawImage(tempImage, text_x - (.6*x_diff), text_y - (y_diff*.1), x_diff*.5, y_diff*.25);
+			}
         }
         else{
-        	//draw line
-            context.beginPath();
-            context.moveTo(line_x_s, line_y+10);
-            context.lineTo(line_x_e, line_y+10);
-            context.lineTo(line_x_e - x_diff, line_y + y_diff);
-            context.lineTo(line_x_s + x_diff, line_y + y_diff);
-            context.lineTo(line_x_s, line_y+10);
-
-            context.fillStyle = '#'+ Math.random().toString().slice(3,6);
-            context.fill();
-            context.stroke();
-            context.closePath();
-
-
-            
-            //write text 
-            context.fillStyle = dataconfig[11].value;
-            //context.font = "15px Arial";
-            var status_len =  context.measureText(datainput[i].status).width;
-            var value_len =  context.measureText(datainput[i].value).width;
-            var total_len = status_len+value_len;
-
-
-            if(dataconfig[6].value == "left")
-            {
-                var text_x = (line_x_s + x_diff);
-                var text_y = (line_y+line_y+y_diff)/2;
-                context.fillText(datainput[i].status+": "+datainput[i].value,text_x, text_y+(y_diff*.1));
-            }
-            else if(dataconfig[6].value == "right"){
-            	var temp_rx = line_x_e - x_diff; 
-            	var text_x = temp_rx - total_len;
-            	var text_y = (line_y+line_y+y_diff)/2;
-            	context.fillText(datainput[i].status+": "+datainput[i].value,text_x, text_y+(y_diff*.1));
-            }
-            else{
-                var text_x =line_x_s + (line_x_e-line_x_s)/2;
-                var text_y = (line_y+line_y+y_diff)/2;
-                var align = total_len/2;
-                context.fillText(datainput[i].status+": "+datainput[i].value,text_x-align, text_y+(y_diff*.1));
-                //context.fillText(datainput[i].status+": "+datainput[i].value,text_x, text_y);
-            }
-            
-            //line_x_s = line_x_s + x_diff;
-            //line_x_e = line_x_e - x_diff;
-            //line_y = line_y + y_diff; 
-            line_x_s = line_x_s_ + ((i+1)*x_diff);
-            line_x_e = line_x_e_ - ((i+1)*x_diff);
-            line_y = line_y_ + ((i+1)*y_diff); 
-
+            let text_x = (line_x_s + line_x_e)/2;
+            let text_y = (line_y+(idx*y_diff)+(y_diff/2));
+            let align = total_len/2;
+            context.fillText(datainput[idx].status+": "+datainput[idx].value,text_x-align, text_y+(y_diff*.1));
+            tempImage.onload = function() {
+			    context.drawImage(tempImage, text_x-align - (.6*x_diff), text_y - (y_diff*.1), x_diff*.5, y_diff*.25);
+			}
         }
+
     }
+    
 }			
 
 			
