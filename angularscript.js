@@ -22,7 +22,7 @@ var app = angular.module("tester", ["demo"]);
 
         var config=[
         {"type":"font_name","value":"Arial"},
-        {"type":"font_size","value":"15px"},
+        {"type":"font_size","value":"15"},
         {"type":"font_style","value":"Bold"},
         {"type":"canvas_height","value":"500"},
         {"type":"canvas_width","value":"500"},
@@ -32,7 +32,8 @@ var app = angular.module("tester", ["demo"]);
         {"type":"bar_space","value":1.2},
         {"type":"bar_image_src","value":"Img/bar4.jpg"},
         {"type":"chart_type","value":"funnel"},
-        {"type":"font_color","value":"black"}
+        {"type":"font_color","value":"black"},
+        {"type":"number_alignment","value":"default"}
         ] ;
 
 
