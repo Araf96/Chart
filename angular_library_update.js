@@ -81,53 +81,17 @@ var _$funnelchart=function(){
     	tot_val = tot_val + datainput[p].value;
     }
 
-    var line_x_s = first_x;
-    var line_x_e = third_x;
+    var line_x_s = first_x - x_diff;
+    var line_x_e = third_x + x_diff;
     var line_y = first_y;
     //set_font
     var font_sz =  dataconfig[2].value+" "+dataconfig[1].value+" "+dataconfig[0].value;
     context.font = font_sz;
 
-
-    //size configuration
-    var flg = 0;
-    var i = 0;
-    var cnt = 0;
-    do{
-        var line_x_s_t = line_x_s;
-        var line_x_e_t = line_x_e;
- 
-        flg = 0;
-        cnt++;
-
-        for(var l = 0;l<datainput.length;l++)
-        {
-            var check_x_s = line_x_s_t + Math.round(inc/2);
-            var check_x_e = line_x_e_t - Math.round(inc/2);
-            var check_fit = check_x_e - check_x_s;
-
-            var temp_stat = context.measureText(datainput[l].status).width;
-            var temp_val = context.measureText(datainput[l].value).width;
-
-            var total =temp_stat + temp_val;
-
-            if(total+10>=check_fit)
-            {
-                line_x_s = line_x_s - x_diff;
-                line_x_e = line_x_e + x_diff;
-                flg = 1;
-            }
-            line_x_s_t = line_x_s_t + x_diff;
-            line_x_e_t = line_x_e_t - x_diff;
-        }
-        
-    }while(flg!=0);
+    var mid = n_wid/2;
 
 
-
-
-
-      
+    var diffrence = line_x_e - line_x_s;  
     //draw funnelChart
     for(var i=0;i<sorted_data.length;i++)
     {
@@ -150,14 +114,34 @@ var _$funnelchart=function(){
     	"fuchsia","violet","silver","mistyrose"];
 		var strokeStyle = color[Math.floor(Math.random() * color.length)];
     	
+		var proportion = datainput[idx].value/sorted_data[0].value;
 
+    	/*context.beginPath();
+        context.moveTo((line_x_s+(i*x_diff)), line_y+(idx*y_diff)+10);
+        context.lineTo((line_x_e-(i*x_diff)), line_y+(idx*y_diff)+10);
+        context.lineTo((line_x_e-(i*x_diff) - x_diff), line_y+(idx*y_diff) + y_diff);
+        context.lineTo((line_x_s+(i*x_diff) + x_diff), line_y+(idx*y_diff) + y_diff);
+        context.lineTo((line_x_s+(i*x_diff)), line_y+(idx*y_diff)+10);
 
-    	context.beginPath();
-        context.moveTo(line_x_s+(i*x_diff), line_y+(idx*y_diff)+10);
-        context.lineTo(line_x_e-(i*x_diff), line_y+(idx*y_diff)+10);
-        context.lineTo(line_x_e-(i*x_diff) - x_diff, line_y+(idx*y_diff) + y_diff);
-        context.lineTo(line_x_s+(i*x_diff) + x_diff, line_y+(idx*y_diff) + y_diff);
-        context.lineTo(line_x_s+(i*x_diff), line_y+(idx*y_diff)+10);
+        //context.fillStyle = '#'+ Math.random().toString().slice(3,6);
+        context.fillStyle = strokeStyle;
+        context.fill();
+        context.stroke();
+        context.closePath();*/
+
+        
+        var lng = (diffrence*proportion)/2;
+
+        //console.log(lng);
+
+        var ang = lng*.3;
+
+        context.beginPath();
+        context.moveTo(mid-lng, line_y+(idx*y_diff)+10);
+        context.lineTo(mid+lng, line_y+(idx*y_diff)+10);
+        context.lineTo( mid+lng - ang, line_y+(idx*y_diff) + y_diff);
+        context.lineTo(mid-lng + ang, line_y+(idx*y_diff) + y_diff);
+        context.lineTo(mid-lng, line_y+(idx*y_diff)+10);
 
         //context.fillStyle = '#'+ Math.random().toString().slice(3,6);
         context.fillStyle = strokeStyle;
